@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use these data and code, please cite this repository."
+title: "Masters of Water and Stone. Exploring the role of rock art carvers in Nordic Bronze Age Societies - Supplementary information"
+version: 1.0.0
+license: CC-BY-4.0
+authors:
+  - family-names: "Moyano Di Carlo"
+    given-names: "Julián"
+    orcid: "https://orcid.org/0000-0003-1524-9514"
+abstract: "This repository provides data and code to reproduce the results presented in the book 'Masters of Water and Stone. Exploring the role of rock art carvers in Nordic Bronze Age Societies'."
