@@ -1,0 +1,641 @@
+---
+title: "Tracing carvers on the rock"
+subtitle: "Code to reproduce the results" 
+author:   
+  - name: Julián Moyano Di Carlo
+    orcid: 0000-0003-1524-9514
+    email: jmoyanodicarlo@gmail.com
+    url: https://www.researchgate.net/profile/Julian-Moyano-Di-Carlo?ev=hdr_xprf
+    affiliation: 
+      - name: Department of Historical Studies (GU)
+        url: https://www.gu.se/en/historical-studies        
+date: "`r format(Sys.Date())`"
+license: "CC BY-NC-SA"
+funding: "Tracing carvers on the rocks (DIGARV 2020-03817)"
+format: 
+    html:
+        link-external-newwindow: true
+        embed-resources: true
+toc: true
+toc_float: true
+title-block-banner: true
+lightbox: true
+link-external-newwindow: true
+theme: flaty
+---
+
+::: callout-note
+This notebook was executed with R v`r getRversion()`
+:::
+
+## Introduction
+
+This document provides the supplemental Information accompanying Chapter 7 of the book "[Masters of Water and Stone. Exploring the Role of Rock Art Carvers in Nordic Bronze Age Societies](https://www.oxbowbooks.com/9798888573044/masters-of-water-and-stone/)". All data required to reproduce the main analyses is available in the Zenodo repository that includes this markdown document.
+
+For more information about the research questions and rationale behind these analyses, as well as the interpretation of the results, please read the book.
+
+## Directory and libraries
+
+The following code loads and install, if necessary, all packages used in the script on the date they were last used to ensure reproducibility.
+
+- `here` and `groundhog` are used for reproducibility
+
+::: callout-tip
+The function `groundhog.library` must be executed twice: one time to install packages, and another time to load them. To load the packages in the the current date run `lapply(pkgs, library, character.only=TRUE)` instead.
+:::
+
+- `readr` and `sf` are used to read .csv and .shp files
+
+- `dplyr`, `forcats`, `glue`, `purrr`, `tibble`, and `tidyr` are use for data cleaning and exploratory data analysis - `ggplot2`, `ggpubr`, `ggrepel`, and `scales` are used for plotting
+
+- `geomoporh` and `momocs` are used for morphometrics
+
+- `dispRity` is used for disparity analysis
+
+- `knitr` and `rmarkdown` are used to produce the notebook
+
+```{r}
+#| label: packages
+#| message: false
+#| warning: false
+
+# Clean environment
+rm(list=ls())
+
+# Required packages
+pkgs <- c("dispRity", "dplyr", "forcats", "ggplot2", "ggpubr", "ggrepel", "glue", "here", "knitr", "Momocs", "purrr", "readr", "rmarkdown", "scales", "sf", "tibble", "tidyr", "geomorph")
+
+# Load packages on date of use (and install if necessary)
+require("groundhog")
+groundhog.library(pkgs, "2025-10-1")
+
+# Setting directory
+here::i_am("scripts/Tracing-the-carvers.qmd")
+```
+
+## Datasets
+
+The data used in this script comes from two shapefiles. `AspebergetFigures.shp` is a multipolygon feature containing all figures at Aspeberget, with additional information (size, depth, chronology, etc.). `BohuslanShips.shp` is a multipolygon feature containing 746 ship figures, with additional information (size, length, chronology, etc.).
+
+```{r}
+#| label: import
+#| message: false
+#| warning: false
+
+# Import shape file with figures information
+AspebergetFigures <- st_drop_geometry(st_read(here("data/shp/AspebergetFigures.shp")))
+
+# Import metadata for Bohuslan ships
+BohuslanShips <- st_drop_geometry(st_read(here("data/shp/BohuslanShips.shp")))
+```
+
+## Partial figures analysis
+
+This section analyzes the rate of partial depiction of figures at Aspeberget and compares it across phases, panels, and figure types. A partial figure is defined as one that lacks some of its basic attributes. For example, a human figure missing one leg or a ship missing the prow or a stern.
+
+### Chi-square test
+
+Chi-square analysis was performed to evaluate the statistical significance of differences between phases, panels, and types of figures.
+
+```{r}
+#| label: chisq
+#| message: false
+#| warning: false
+
+# Create contingency table
+tab_chisq_type <- table(AspebergetFigures$Type, AspebergetFigures$Depiction)
+tab_chisq_raa <- table(AspebergetFigures$RAAnr, AspebergetFigures$Depiction)
+tab_chisq_phase <- table(AspebergetFigures$Phase, AspebergetFigures$Depiction)
+
+# Filter relevant cases
+tab_chisq_type <- tab_chisq_type[c("Animal", "Ship", "Circle", "Human", "Foot/Shoe sole"), ]
+tab_chisq_raa <- tab_chisq_raa[c("Tanum 12:1", "Tanum 18:1", "Tanum 25:1", "Tanum 28:1", "Tanum 120:1"), ]
+tab_chisq_phase <- tab_chisq_phase[c("1", "2", "3", "4", "5"), ]
+
+# Chi-squared test
+chisq_result_type <- chisq.test(tab_chisq_type)
+chisq_result_raa <- chisq.test(tab_chisq_raa)
+chisq_result_phase <- chisq.test(tab_chisq_phase)
+
+# Extract and format p-value for plotting
+p_value_type <- chisq_result_type$p.value
+p_value_raa <- chisq_result_raa$p.value
+p_value_phase <- chisq_result_phase$p.value
+
+p_label_type <- glue("Chi-sq, p {scales::pvalue(p_value_type, accuracy = 0.001)}")
+p_label_raa <- glue("Chi-sq, p = {scales::pvalue(p_value_raa, accuracy = 0.001)}")
+p_label_phase <- glue("Chi-sq, p = {scales::pvalue(p_value_phase, accuracy = 0.001)}")
+
+```
+
+### Plotting
+
+Stacked bar plots showing percentages of partial and impartial figures grouped by phases, panels, and types.
+
+```{r}
+#| label: partiality
+#| message: false
+#| warning: false
+#| fig-width: 7
+#| fig-height: 10
+
+# Partiality by type
+df_partial_type <- AspebergetFigures %>%
+  filter(Type %in% c("Animal", "Ship", "Circle", "Human", "Foot/Shoe sole")) %>%
+  count(Type, Depiction) %>%
+  group_by(Type) %>%
+  mutate(prop = n / sum(n),
+         pct_label = scales::percent(prop, accuracy = 1),
+         total = sum(n)) %>%
+  ungroup() %>%
+  mutate(total_label = paste0(Type, "\n(n=", total, ")"))
+
+## Plot
+barp_partial_type <- df_partial_type %>% 
+    ggplot(aes(x = Type, y = prop, fill = Depiction)) +
+        geom_col(position = "stack") +
+        geom_label(aes(label = pct_label, group = Depiction),
+                  position = position_stack(vjust = 0.5),
+                  color = "black", fill = "white",
+                  size = 3.5, show.legend = F) +
+        annotate("text", 
+                 x = median(seq_along(unique(df_partial_type$Type))),
+                 y = 1.05,
+                 label = p_label_type,
+                 size = 3.5,
+                 fontface = "italic") +
+        scale_y_continuous(labels = scales::percent_format(accuracy = 25)) +
+        scale_x_discrete(labels = unique(df_partial_type$total_label)) +
+        labs(x = NULL, y = NULL, fill = "Depiction") +
+        theme_linedraw() +
+        theme(panel.grid.major.x = element_blank())
+
+
+# Partiality by panel
+df_partial_panel <- AspebergetFigures %>% 
+    group_by(RAAnr) %>% 
+    filter(n() > 50) %>% 
+    ungroup() %>%
+    count(RAAnr, Depiction) %>%
+    group_by(RAAnr) %>%
+    mutate(prop = n / sum(n),
+           pct_label = scales::percent(prop, accuracy = 1),
+           total = sum(n)) %>%
+    ungroup() %>%
+    mutate(total_label = paste0(RAAnr, "\n(n=", total, ")"))
+
+## Plot
+barp_partial_panel <- df_partial_panel %>% 
+    ggplot(aes(x = RAAnr, y = prop, fill = Depiction)) +
+        geom_col(position = "stack") +
+        geom_label(aes(label = pct_label, group = Depiction),
+                  position = position_stack(vjust = 0.5),
+                  color = "black", fill = "white",
+                  size = 3.5, show.legend = F) +
+        annotate("text", 
+                 x = median(seq_along(unique(df_partial_type$Type))),
+                 y = 1.05,
+                 label = p_label_raa,
+                 size = 3.5,
+                 fontface = "italic") +
+        scale_y_continuous(labels = scales::percent_format(accuracy = 25)) +
+        scale_x_discrete(labels = unique(df_partial_panel$total_label)) +
+        labs(x = NULL, y = NULL, fill = "Depiction") +
+        theme_linedraw() +
+        theme(panel.grid.major.x = element_blank())
+
+
+# Partiality by phase
+df_partial_phase <- AspebergetFigures %>% 
+    filter(Phase %in% c(1:5)) %>%
+    count(Phase, Depiction) %>%
+    group_by(Phase) %>%
+    mutate(prop = n / sum(n),
+           pct_label = scales::percent(prop, accuracy = 1),
+           total = sum(n)) %>%
+    ungroup() %>%
+    mutate(Phase = case_when(Phase == "1" ~ "Phase 1",
+                             Phase == "2" ~ "Phase 2",
+                             Phase == "3" ~ "Phase 3",
+                             Phase == "4" ~ "Phase 4",
+                             Phase == "5" ~ "Phase 5"),
+           total_label = paste0(Phase, "\n(n=", total, ")"))
+
+## Plot
+barp_partial_phase <- df_partial_phase %>% 
+    ggplot(aes(x = Phase, y = prop, fill = Depiction)) +
+        geom_col(position = "stack") +
+        geom_label(aes(label = pct_label, group = Depiction),
+                  position = position_stack(vjust = 0.5),
+                  color = "black", fill = "white",
+                  size = 3.5, show.legend = F) +
+        annotate("text", 
+                 x = median(seq_along(unique(df_partial_type$Type))),
+                 y = 1.05,
+                 label = p_label_phase,
+                 size = 3.5,
+                 fontface = "italic") +
+        scale_y_continuous(labels = scales::percent_format(accuracy = 25)) +
+        scale_x_discrete(labels = unique(df_partial_phase$total_label)) +
+        labs(x = NULL, y = NULL, fill = "Depiction") +
+        theme_linedraw() +
+        theme(panel.grid.major.x = element_blank())
+
+
+# Combine plots
+ggarrange(barp_partial_type, barp_partial_panel, barp_partial_phase,
+          ncol = 1, common.legend = TRUE, legend = "top", labels = "AUTO")
+```
+
+## Morphometrics
+
+Geometric morphometrics is the study and comparison of shape, defined as the geometric properties remaining after removing the effects of scale, rotation, and translation of an object. Because consistent landmark placement on rock art figures is very difficult, this study uses Elliptical Fourier Analysis (EFA) to analyze the figures' *outlines.* EFA is a mathematical tool that quantifies a closed outline. It uses Fourier transforms to decompose the outline of a geometric figure into functions known as harmonics (Giardina and Kuhl 1977; Bonhomme et al. 2014). Each harmonic in the series captures increasingly fine details of the shape, enabling precise reconstruction and statistical comparison. Importantly, the shapes analyzed must be homologous—that is, the features compared must be present in all the shapes considered. In other words, the rock art figures analyzed must have the same parts. To ensure shape homology, the selection included only complete ships depicting prow and stern extensions, keel extension, stabilizer, and hull. For the same reason, ships with locking planks were excluded, and crews were not considered in the analysis. Because the analysis is based on outlines, internal features of the hull are not included either. However, as shown in the results, none of these features show any significant pattern that can be attributed to communities of practice.
+
+### Outline extraction
+
+Ship images were collected as .jpg files into `BohuslanShips.shp` using ArcGIS Pro (v3.1+), keeping the same dimensions and resolutions. The ships were manually oriented and flipped so that their prows faced to the right. Otherwise, two identical ships would be grouped into two different clusters simply because of their direction (an aspect that is not analyzed in this study). Since crews are not part of the analysis either, they were manually removed. Similarly, hulls were filled to avoid issues when extracting the outlines.
+
+::: callout-tip
+The extraction of outlines can take some time. The process can be skipped by loading a .rds file with `outlines <- readRDS(here("output/outlines.rds"))`
+:::
+
+```{r}
+#| label: outlines
+#| message: false
+#| warning: false
+
+# Listing images 
+lf_outlines <- list.files(here("data/jpg"), full.names = TRUE)
+
+# Extract outlines from images and combine (silent)
+sink(tempfile()) 
+outlines <- Out(import_jpg(lf_outlines))  
+sink()  
+
+# Arrange metadata
+outlines_md <- tibble(DIGARVID = names(outlines)) %>%
+    left_join(BohuslanShips)
+
+# Add metadata to outlines
+outlines$fac <- outlines_md
+
+# Save outlines
+saveRDS(outlines, here("output/outlines.rds"))
+```
+
+### Standardization of outlines
+
+Given the characteristics of the outlines analyzed, they were not normalized but only centered, scale, and oriented (sees section "Elliptical Fourier Analysis" below).
+
+::: callout-tip
+The process can be skipped by loading a .rds file with `outlines_standard <- readRDS(here("output/outlines_standard.rds"))`
+:::
+
+```{r}
+#| label: standarization
+#| message: false
+#| warning: false
+
+# Center, scale, and orient
+outlines_standard <- outlines %>% 
+    coo_center() %>% 
+    coo_scale() %>% 
+    coo_slidedirection(direction = "up")
+
+# Save standardize outlines with medatada in .rds file
+saveRDS(outlines_standard, here("output/outlines_standard.rds"))
+
+```
+
+### Shape complexity
+
+The complexity of a shape was calculated using the commonly used perimeter-to-area ratio. However, the perimeter-to-area ratio has an undesirable relationship with polygon size. Keeping the shape unchanged, a larger polygon will always have a smaller perimeter-to-area ratio. Therefore, the ratio was calculated after shapes were oriented and scaled using the morphometric methods mentioned above (Bonhomme et al. 2014).
+
+```{r}
+#| label: complexity
+#| message: false
+#| warning: false
+#| fig-width: 15
+#| fig-height: 7
+
+# Calculate shape metrics. 
+outlines_metrics <- outlines_standard %>%
+    Momocs::mutate(PerimToArea = coo_perim(.) / coo_area(.))
+
+# Complexity by phase
+bp_complexity <- outlines_metrics$fac %>% 
+    group_by(Phase) %>%
+    mutate(total = n(), PhaseN = paste0(Phase, "\n(n=", total, ")")) %>% 
+    ungroup() %>% 
+    ggplot(aes(x = PhaseN, y = PerimToArea)) +
+    geom_boxplot(alpha = 0.5,
+                 outlier.alpha = 0.75,
+                 fill = "darkgrey",
+                 width = 0.5) +
+    stat_kruskal_test(label.y = 1.9, label.x = 1) +
+    scale_y_log10(labels = label_number()) +
+    theme_linedraw() +
+    theme(panel.grid = element_blank()) +
+    labs(x = NULL, y = "Shape complexity")
+
+
+# Complexity vs size 
+sctp_complexity_size <- outlines_metrics$fac %>% 
+    # convert area to cm2
+    mutate(Area = Area * 10000)  %>% 
+    ggplot(aes(x = Area, y = PerimToArea, color = Phase)) +
+    geom_point(alpha = 0.6, size = 2.5) +
+    geom_smooth(method = "lm", se = F, show.legend = FALSE) +
+    scale_x_log10(labels = label_number()) +
+    scale_y_log10(labels = label_number()) +
+    stat_cor(p.accuracy = 0.001, r.accuracy = 0.01, show.legend = FALSE) +
+    theme_linedraw() +
+    theme(panel.grid = element_blank(),
+          legend.title = element_blank(),
+          legend.position = "inside",
+          legend.position.inside = c(0.9, 0.15)) +
+    labs(x = expression(paste("Area ", "(", cm^{2}, ")")),
+         y = "Shape complexity")
+
+# Combine plots
+ggarrange(bp_complexity, sctp_complexity_size, nrow = 1, labels = "AUTO")
+```
+
+### Elliptical Fourier Analysis
+
+The number of harmonics required for EFA was automatically calculated using [harmonic power calibration](https://momx.github.io/Momocs/reference/calibrate_harmonicpower.html). EFA coefficients were *not* normalized. Commonly, outlines are [normalized](https://momx.github.io/Momocs/reference/efourier.html) by removing the first harmonic (Bonhomme et al. 2014). However, if the shapes are prone to poor alignment among the first ellipses, this will result in poorly (or even not at all) "homologous" coefficients. Shapes particularly prone to this are either (at least roughly) circular and/or strongly bilaterally symmetric, which is the case for the ships analyzed here. Consequently, the figures were manually oriented, and the first harmonic (not used for this purpose) was eliminated[^1].
+
+[^1]: Note that the first harmonic captures the largest axial dimension of the ship, namely its length. Consequently, shape and length are not entirely independent. Two ships with a similar design may appear morphologically different simply because their hull lengths differ. Removing the first harmonic may help reduce this size-related bias and mitigates the emergence of gradient-like representations (the horseshoe effect) in principal component analysis (PCA).
+
+::: callout-tip
+The calculation of harmonics and EFA can take some time. The process can be skipped by loading a .rds file with `efa_outlines <- readRDS(here("output/efa_outlines.rds"))`
+:::
+
+```{r}
+#| label: efa
+#| message: false
+#| warning: false
+
+# Estimate harmonics 
+harmonics_outlines <- outlines_standard %>% 
+    calibrate_harmonicpower_efourier(plot = F)
+
+# Eliptical fourier of all ships
+efa_outlines <- outlines_standard %>%
+    efourier(nb.h = as.matrix(harmonics_outlines[["minh"]])[[4,1]], norm = F)
+
+# Save efa in .rds file 
+saveRDS(efa_outlines, here("output/efa_outlines.rds"))
+
+# Remove the first harmonic (first ellipse) not used for normalization
+efa_outlines_harm2 <- efa_outlines %>% rm_harm(1)
+```
+
+### Allometry
+
+Allometry examines the relationship between shape and size, with particular emphasis on changes in proportions. This analysis is relevant because the morphological characteristics of rock art figures can vary with size. In other words, the smaller the figure, the more limited the ability to include details and complex shapes. For the allometric analysis, this study uses the multivariate regression of shape on centroid size method proposed by Klingenberg (2016).
+
+::: callout-warning
+`momocs` does not offer a built-in implementation of allometry. Therefore, the coefficients obtained in Momocs were analyzed with the `geomorph` package. This is an experimental approach and it should be taken carefully. Nonetheless, with or without allometric correction, the results are essentially the same.
+:::
+
+```{r}
+#| label: allometry
+#| message: false
+#| warning: false
+
+# Using Momocs for outline analysis
+shape_data <- efa_outlines_harm2$coe  # shape coefficients
+size_data <- data.frame(size = outlines$Area)
+
+# Use geomorph for allometry modeling
+proc_model <- procD.lm(shape_data ~ size, data = size_data)
+plotAllometry(proc_model, size = size_data$size, method = "RegScore")
+
+# Size correction
+efa_allometry <- efa_outlines_harm2
+efa_allometry$coe <- proc_model$residuals
+```
+
+## Multivariate analysis
+
+### Principal component analysis and Manova
+
+PCA and Manova are used to analyze statistical differences between ships of different phases.
+
+::: callout-tip
+The code can be easily modified to analyze other features commented in the study, such as differences between geographical areas (`Kommun`), crewed and uncrewed ships (`Crew`), or ships with different types of hulls (`Hull`).
+:::
+
+```{r}
+#| label: pca-phases
+#| message: false
+#| warning: false
+#| fig-width: 8
+#| fig-height: 8
+
+## PCA
+pca_outlines <- PCA(efa_allometry) 
+
+# MANOVA
+manova_phases <- MANOVA(pca_outlines, ~Phase)
+pwmanova_phase <- MANOVA_PW(pca_outlines, ~Phase)
+
+## Percentage of variance of PC1 and PC2
+percent_variance_outlines <- summary(pca_outlines)$importance[2,1:2]
+percent_variance_outlines <- percent_variance_outlines * 100
+
+# Labs with percetange of variance
+labs_pca_outlines <- c(glue("PC1({round(percent_variance_outlines[1], 1)}%)"),
+                       glue("PC2({round(percent_variance_outlines[2], 1)}%)"))
+
+# Labels for plotting phase 
+phase_centers <- pca_outlines$x %>%
+    as.data.frame() %>% 
+    rownames_to_column("DIGARVID") %>% 
+    left_join(outlines_md) %>%  
+    group_by(Phase) %>%
+    summarise(PC1_mean = mean(PC1),
+              PC2_mean = mean(PC2))
+
+# PCA plot of phases
+pca_plot_phases <- pca_outlines$x %>%
+    as.data.frame() %>% 
+    rownames_to_column("DIGARVID") %>% 
+    left_join(outlines_md) %>% 
+    ggplot(aes(x = PC1, y = PC2, color = Phase)) +
+    geom_point(alpha = 0.5) +
+    # highlight Aspberget cases
+    geom_point(data = .%>% filter(Scale == "Aspeberget"),
+               shape = 1, color = "black", alpha = 0.5) +
+    stat_ellipse(level = 0.68, linetype = 2, linewidth = 0.75) +
+    geom_label_repel(data = phase_centers,
+                    aes(x = PC1_mean, y = PC2_mean, label = Phase, color = Phase),
+                    fontface = "bold", size = 5, label.size = NA, fill = scales::alpha("white", 0.5)) +
+    # add manova p-value
+    annotate("text", x = 0.5, y = 0.4,
+             label = glue("Manova, p {scales::pvalue(manova_phases$stats['fac', 'Pr(>F)'])}"), size = 5) +
+    labs(x = labs_pca_outlines[1], y = labs_pca_outlines[2]) +
+    theme_linedraw() +
+    theme(panel.grid = element_blank(),
+          legend.position = "none") 
+
+plot(pca_plot_phases)
+```
+
+### Principal component analysis by municipality (*kommun*)
+
+The analysis presented above has a clear limitation. For the purposes of this study, the analysis of morphological differences between figures from different phases (which are usually evident to the naked eye) is of secondary importance. The goal is to detect morphological differences within each phase and evaluate whether this variation correlates with different *areas* of Bohuslän where communities of practice with different artistic styles may have existed. To this end, the following analysis distinguishes between phases and groups observations by municipality.
+
+::: callout-warning
+Municipalities are used only as an artificial boundary to visualize possible stylistic differences between distant areas of Bohuslän. Obviously, these geographical boundaries most likely did not exist during the Bronze Age.
+:::
+
+```{r}
+#| label: pca-kommun
+#| message: false
+#| warning: false
+#| fig-width: 10
+#| fig-height: 8
+
+# Median of PC1 and PC2 per Kommun and Phase to make labels
+kommun_centers_phase <- pca_outlines$x %>%
+    as.data.frame() %>% 
+    rownames_to_column("DIGARVID") %>% 
+    left_join(outlines_md) %>%  
+    group_by(Phase, Kommun) %>%
+    summarise(PC1_mean = mean(PC1),
+              PC2_mean = mean(PC2),
+              .groups = "drop")
+
+# PCA plot faceted by Phase
+pca_plot_kommun_phase <- pca_outlines$x %>%
+    as.data.frame() %>% 
+    rownames_to_column("DIGARVID") %>% 
+    left_join(outlines_md) %>% 
+    mutate(Kommun = fct_relevel(Kommun,
+                               "Strömstad",
+                               "Tanum",
+                               "Lysekil",
+                               "Munkedal",
+                               "Sotenäs")) %>% 
+    ggplot(aes(x = PC1, y = PC2, color = Kommun)) +
+    geom_point(alpha = 0.5) +
+    # highlight Aspeberget cases
+    geom_point(data = . %>% filter(Scale == "Aspeberget"),
+               shape = 1, color = "black", alpha = 0.5) +
+    stat_ellipse(level = 0.68, linetype = 2, linewidth = 0.75, show.legend = F) +
+    # Add Kommun labels per Phase
+    geom_label_repel(data = kommun_centers_phase,
+              aes(x = PC1_mean, y = PC2_mean, label = Kommun, color = Kommun),
+              inherit.aes = FALSE, fontface = "bold", size = 4, label.size = NA, fill = scales::alpha("white", 0.5)) +
+    scale_x_continuous(breaks = seq(-0.25, 0.50, 0.25)) +
+    labs(x = NULL, y = NULL, color = NULL) +
+    theme_light() +
+    theme(panel.grid = element_blank(),
+          legend.position = "none", 
+          axis.ticks = element_line(color = "black"),
+          axis.text.x = element_text(color = "black"), 
+          axis.text.y = element_text(color = "black"),
+          panel.border = element_rect(color = "black"),
+          strip.text = element_text(color = "gray10"),
+          strip.background = element_rect(color = "black")) +
+    facet_wrap(vars(Phase), scales = "free")
+
+pca_plot_kommun_phase
+```
+
+## Median shapes
+
+A [mean shape](https://momx.github.io/Momocs/reference/MSHAPES.html?q=mean#null) is the average configuration of a set of outlines after alignment via Elliptical Fourier Analysis. It is a mathematical abstraction that does not necessarily correspond to any single figure, but it serves as a baseline for comparison. In this study, it is used to calculate the *median* shape of ship figures by phase.
+
+```{r}
+#| label: median-shapes
+#| message: false
+#| warning: false
+
+# Median shapes by phase (1 to 5)
+medianshapes <- MSHAPES(efa_outlines, ~Phase, FUN = median, nb.pts = 500)
+
+# Plot
+plot_MSHAPES(medianshapes)
+
+```
+
+## Disparity analysis
+
+This sections analyzes shaoe disparty between phases in ship outlines. According to its author (Guillerme 2018), the dispRity package is:
+
+> *A modular package for measuring disparity (multidimensional space occupancy). Disparity can be calculated from any matrix defining a multidimensional space. The package provides a set of implemented metrics to measure properties of the space and allows users to provide and test their own metrics. The package also provides functions for looking at disparity in a serial way (e.g. disparity through time) or per groups as well as visualising the results. Finally, this package provides several statistical tests for disparity analysis.*
+
+Disparity is measured as the sum of variances of the fourier coefficients.
+
+```{r}
+#| label: disparity
+#| message: false
+#| warning: false
+#| fig-width: 8
+#| fig-height: 6
+
+# Find indices for each phase in the dataset
+phases_index <- pca_outlines$fac %>%
+    mutate(row = row_number()) %>%
+    split(.$Phase) %>%
+    map(~ .x$row)
+
+# Disparity index on pca componentes
+disparity_phases <- dispRity(boot.matrix(custom.subsets(pca_outlines$x,
+                                                        phases_index),
+                                 bootstraps = 1000),
+                            metric = c(sum, variances))
+
+# Segments to show the length of phases
+segments <- tibble(x = c(1690, 1390, 1090, 890, 590),
+                   y = c(0.05, 0.05, 0.05, 0.05, 0.05),
+                   xend = c(1410, 1110, 910, 610, 310),
+                   yend = c(0.05, 0.05, 0.05, 0.05, 0.05),
+                   label = c("Phase 1", "Phase 2", "Phase 3", "Phase 4", "Phase 5"),
+                   n = c(paste0("n", "=", summary.dispRity(disparity_phases)[1,2]),
+                         paste0("n", "=", summary.dispRity(disparity_phases)[2,2]),
+                         paste0("n", "=", summary.dispRity(disparity_phases)[3,2]),
+                         paste0("n", "=", summary.dispRity(disparity_phases)[4,2]),
+                         paste0("n", "=", summary.dispRity(disparity_phases)[5,2])))
+
+# Plot
+summary.dispRity(disparity_phases) %>%
+    mutate(Year = case_when(subsets == "Phase 1" ~ 1550,
+                            subsets == "Phase 2" ~ 1250,
+                            subsets == "Phase 3" ~ 1000,
+                            subsets == "Phase 4" ~ 750,
+                            subsets == "Phase 5" ~ 450)) %>% 
+    ggplot(aes(x = Year, y = obs, label = obs)) +
+        geom_errorbar(aes(ymin = `2.5%`, ymax = `97.5%`),
+                      width = 20,
+                      color = "grey15") +
+        geom_point(size = 2) +
+        geom_label(nudge_x = 60) +
+        scale_x_reverse(limits = c(1700, 300),
+                           breaks = seq(300, 1700, 100)) +
+        scale_y_continuous(breaks = seq(0.06, 0.24, 0.02)) +
+        geom_segment(data = segments,
+                     mapping = aes(x = x, y = y, xend = xend, yend = yend),
+                     linewidth = 0.3,
+                     inherit.aes = F, color = "grey15") +
+        geom_text(data = segments, aes(x = (x + xend) / 2, y = y, label = label),
+                  nudge_y = 0.0025, size = 3.5, color = "grey15") +  
+        geom_text(data = segments, aes(x = (x + xend) / 2, y = y, label = n),
+                  nudge_y = -0.0025, size = 3.5, color = "grey15") +  
+        labs(x = "Year (BC)", y = "Disparity (sum of variances)") +
+        theme_linedraw() +
+        theme(panel.grid = element_blank())
+```
+
+## References
+
+Bonhomme, V., Picq, S., Gaucherel, C., and Claude, J. 2014. “Momocs: Outline Analysis Using R.” Journal of Statistical Software 56 (13): 1–24. <https://doi.org/10.18637/jss.v056.i13>.
+
+Giardina, C. R., and Kuhl, F. P. 1977. “Accuracy of Curve Approximation by Harmonically Related Vectors with Elliptical Loci.” Computer Graphics and Image Processing 6 (3): 277–85. <https://doi.org/10.1016/S0146-664X(77)80029-4>.
+
+Guillerme, T. 2018. “dispRity: A Modular R Package for Measuring Disparity.” Methods in Ecology and Evolution 9 (7): 1755–63. <https://doi.org/10.1111/2041-210X.13022>.
+
+Klingenberg, C. P., 2016. “Size, shape, and form: concepts of allometry in geometric morphometrics". *Dev Genes Evol.* 226 (3): 113-37. <https://doi.org/10.1007/s00427-016-0539-2>.

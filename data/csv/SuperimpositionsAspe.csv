@@ -1,0 +1,109 @@
+﻿Panel,Over,Under,OverType,UnderType,OverPhase,UnderPhase
+Tanum 25:1,7c95b85f8e,1e09ecdfef,Ship,Ship,1,1
+Tanum 25:1,4eb6de9150,7c95b85f8e,Ship,Ship,2,1
+Tanum 25:1,8ca40a36b0,0a825b368c,Ship,Ship,1,1
+Tanum 25:1,037c8aa1db,598cf0fe5d,Human,Ship,Indeterminate,2
+Tanum 25:1,efefa72067,598cf0fe5d,Cupmark,Ship,Indeterminate,2
+Tanum 25:1,037c8aa1db,b0b5623a43,Human,Ship,Indeterminate,2
+Tanum 25:1,85ec35a4e0,5e53698331,Cupmark,Ship,Indeterminate,1
+Tanum 25:1,2f1c73f651,5e53698331,Cupmark,Ship,Indeterminate,1
+Tanum 25:1,81ff1a730f,7e51033892,Ship,Indeterminate,3,Indeterminate
+Tanum 25:1,81ff1a730f,e257458b83,Ship,Ship,3,2
+Tanum 25:1,b4757085ff,e257458b83,Animal,Ship,Indeterminate,2
+Tanum 25:1,ff72f11910,89275ba037,Ship,Indeterminate,1,Indeterminate
+Tanum 25:1,20481c95c1,b5df11208d,Animal,Human,1,1
+Tanum 25:1,a1f5812581,060ecade10,Cupmark,Human,Indeterminate,Indeterminate
+Tanum 25:1,d1029002be,4859760f44,Human,Ship,Indeterminate,Indeterminate
+Tanum 25:1,c93f1fa51a,019eab60be,Ship,Ship,1,1
+Tanum 25:1,32c581e035,6493658b7e,Human,Human,5,Indeterminate
+Tanum 25:1,f56d75fb5c,ee35932838,Ship,Human,2,Indeterminate
+Tanum 25:1,1e86774081,0ef5714709,Cupmark,Human,Indeterminate,Indeterminate
+Tanum 25:1,b184f4eebf,88d8b2f148,Indeterminate,Ship,Indeterminate,2
+Tanum 25:1,c030625f3b,423d90006b,Cupmark,Ship,Indeterminate,1
+Tanum 25:1,3c9085f80d,5bd6641ab5,Cupmark,Indeterminate,Indeterminate,Indeterminate
+Tanum 25:1,f75f88c4e7,cb173d8d36,Cupmark,Indeterminate,Indeterminate,Indeterminate
+Tanum 25:1,2ce6344685,ca98494413,Sun,Ship,2,1
+Tanum 25:1,33b4212e37,142d26ebd0,Cupmark,Ship,Indeterminate,1
+Tanum 18:1,e746efe5aa,64931a740a,Spiral,Ship,4,2
+Tanum 18:1,131d56d4aa,35d05a5fc0,Human,Ship,2,2
+Tanum 18:1,cc8e589d28,131d56d4aa,Ship,Human,2,2
+Tanum 18:1,cc8e589d28,0242dfb62a,Ship,House,2,1
+Tanum 18:1,bf304d80b9,0242dfb62a,Ship,House,1,1
+Tanum 18:1,52325a0618,0242dfb62a,Ship,House,2,1
+Tanum 18:1,296dd201bf,72786bdd39,Ship,Ship,4,2
+Tanum 18:1,296dd201bf,4163f163ef,Ship,House,4,1
+Tanum 18:1,72786bdd39,4163f163ef,Ship,House,2,1
+Tanum 18:1,26643b0c52,79a56120e6,Human,Ship,Indeterminate,Indeterminate
+Tanum 18:1,a8c10e72a5,c8892e71e3,Indeterminate,Ship,Indeterminate,3
+Tanum 18:1,e172abc127,865b91dcd3,Cupmark,Ship,Indeterminate,2
+Tanum 18:1,bdfd970db1,865b91dcd3,Ship,Ship,2,2
+Tanum 18:1,c1f2863841,230106b9e7,Ship,Ship,2,2
+Tanum 18:1,0749bbe2be,b41aad28f5,Human,Ship,Indeterminate,2
+Tanum 18:1,9ded0c3de9,0a535804e1,Ship,Ship,4,2
+Tanum 18:1,990320f60c,662caba20f,Cupmark,Animal,Indeterminate,Indeterminate
+Tanum 18:1,662caba20f,69e5848591,Animal,Human,Indeterminate,2
+Tanum 18:1,2fc528709d,662caba20f,Spiral,Animal,Indeterminate,Indeterminate
+Tanum 18:1,9875c7d98b,4a2e80d861,Indeterminate,Ship,Indeterminate,Indeterminate
+Tanum 18:1,9875c7d98b,fb45db7e29,Indeterminate,Indeterminate,Indeterminate,Indeterminate
+Tanum 18:1,58f0db4af3,415ea57aab,Ship,Indeterminate,1,Indeterminate
+Tanum 18:1,58f0db4af3,4b82c328d5,Ship,Ship,1,1
+Tanum 18:1,5eece73ae9,84fe1c0b56,Human,Ship,2,1
+Tanum 18:1,d5ccdc4732,48e65df076,Indeterminate,Ship,Indeterminate,3
+Tanum 18:1,21148aba3d,7b036e18f3,Cupmark,Animal,Indeterminate,Indeterminate
+Tanum12:1,0763cf4399,50b739ffcf,Cupmark,Sun,Indeterminate,2
+Tanum12:1,61a5d29609,d2e2ccebf5,Ship,Ship,Indeterminate,1
+Tanum12:1,e8ba59ad29,3b7d9a4667,Animal,Ship,2,2
+Tanum12:1,5774796a8e,c5edc5f476,Human,Animal,1,1
+Tanum12:1,1581e6c82b,0af1371fa8,Human,Ship,2,1
+Tanum12:1,3b6d7eb49e,1581e6c82b,Human,Human,2,2
+Tanum12:1,3b6d7eb49e,e6f2bf99a7,Human,Circle,2,2
+Tanum12:1,d0d8e0e7f4,e6f2bf99a7,Ship,Circle,2,2
+Tanum12:1,d0d8e0e7f4,f06e4fe8b8,Ship,Circle,2,2
+Tanum12:1,d66bbcada9,d0d8e0e7f4,Indeterminate,Ship,Indeterminate,2
+Tanum12:1,ff9919364e,f8b532c3a7,Ship,Ship,2,1
+Tanum12:1,bc92277c11,d087a3db76,Animal,Ship,1,1
+Tanum12:1,be03c170a6,0dae53cdff,Cupmark,Ship,Indeterminate,1
+Tanum12:1,9d049694e5,0dae53cdff,Human,Ship,Indeterminate,1
+Tanum12:1,a30a84dda3,7ad3f13ee4,Human,Ship,Indeterminate,2
+Tanum12:1,a30a84dda3,935bab16a7,Human,Ship,Indeterminate,2
+Tanum12:1,9d7ea54c0b,a30a84dda3,Human,Human,Indeterminate,Indeterminate
+Tanum12:1,9d7ea54c0b,ad6a0662a4,Human,Ship,Indeterminate,1
+Tanum12:1,d55f495f9b,ad6a0662a4,Ship,Ship,2,1
+Tanum12:1,bcd0722e70,9807b3df89,Animal,Ship,2,2
+Tanum12:1,255d97a284,3c353fb214,Human,Ship,Indeterminate,3
+Tanum12:1,2044edc1bc,1ced4e3c3c,Cupmark,Ship,Indeterminate,1
+Tanum12:1,60f210a4fe,6f39854961,Cupmark,Human,Indeterminate,1
+Tanum12:1,797b2e9592,bfdf9fe4cd,Ship,Ship,Indeterminate,1
+Tanum12:1,84f18dbe5a,5314ef8da9,Ship,Human,2,1
+Tanum12:1,2e3b163edc,5314ef8da9,Ship,Human,2,1
+Tanum12:1,5314ef8da9,95e01feaff,Human,Circle,1,1
+Tanum12:1,59a8fafbbc,f132a10dda,Ship,Ship,4,1
+Tanum12:1,31f94e190d,5e5574bc8d,Animal,Animal,2,2
+Tanum12:1,bcf9366c60,920e2de250,Circle,Ship,2,1
+Tanum12:1,bcf9366c60,175711b7d9,Circle,Ship,2,2
+Tanum12:1,bcf9366c60,1ecec9d865,Circle,Indeterminate,2,Indeterminate
+Tanum 29:1,03b388c287,94c5749af4,Cupmark,Human,Indeterminate,Indeterminate
+Tanum 29:1,91fb03ce70,7610562b92,Cupmark,Human,Indeterminate,Indeterminate
+Tanum 29:1,4001291ea9,2befab8712,Cupmark,Human,Indeterminate,4
+Tanum 29:1,2befab8712,04233ac002,Human,Human,4,4
+Tanum 119:1,cfa7c1194d,abddbe542b,Cupmark,Ship,Indeterminate,1
+Tanum 119:1,d936504f9b,dd52c2010a,Ship,Ship,1,1
+Tanum 28:1,13156863bd,b974b716d3,Cupmark,Ship,Indeterminate,1
+Tanum 28:1,1b97b41b65,974af786a0,Cupmark,Ship,Indeterminate,1
+Tanum 28:1,89e8f74f2b,13ff79268b,Cupmark,Ship,Indeterminate,1
+Tanum 28:1,13ff79268b,7423013ff3,Ship,Human,1,1
+Tanum 28:1,8f51e71f59,ad406273eb,Human,Indeterminate,5,Indeterminate
+Tanum 28:1,0bedb1ba35,4b6b74dcb0,Human,Indeterminate,Indeterminate,Indeterminate
+Tanum 28:1,9dcbcbf4fc,88a6f9dc53,Ship,Ship,2,1
+Tanum 22:1,c608ad68b7,8e88e54d77,Foot/shoe sole,Ship,Indeterminate,2
+Tanum 14:1,d314728c38,e851a1f1dd,Human,Foot/shoe sole,Indeterminate,Indeterminate
+Tanum 120:1,28692e3888,L1968:7758,Cupmark,Human,Indeterminate,Indeterminate
+Tanum 120:1,6899fc9196,b6e18cf4ce,Human,Weapon,2,Indeterminate
+Tanum 120:1,31fd02b9c5,2b450e531b,Human,Weapon,2,Indeterminate
+Tanum 120:1,458c320571,f3a5de7a4c,Human,Animal,2,2
+Tanum 120:1,f3a5de7a4c,55b3f1c87b,Animal,Human,2,2
+Tanum 120:1,648169e49a,cf87b7a255,Cupmark,Wheeled transport,Indeterminate,Indeterminate
+Tanum 120:1,a519a2d1c9,cf87b7a255,Cupmark,Wheeled transport,Indeterminate,Indeterminate
+Tanum 120:1,b0a8cf1f3a,f22530e715,Human,Wheeled transport,Indeterminate,Indeterminate
+Tanum 120:1,2fe9095f55,f22530e715,Cupmark,Wheeled transport,Indeterminate,Indeterminate
+Tanum 120:1,b118a89f7e,53de62b8eb,Indeterminate,Ship,Indeterminate,3
