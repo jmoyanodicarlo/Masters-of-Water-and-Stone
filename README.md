@@ -1,5 +1,7 @@
 # Masters of Water and Stone
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22644490.svg)](https://doi.org/10.5281/zenodo.22644490)
+
 ## Supplementary information
 
 This repository provides the data and code required to reproduce the results presented in:
@@ -40,7 +42,7 @@ See Codebook.pdf for information about the structure and contents of the dataset
 ## Citation
 If you use the data or code contained in this repository, please cite the archived version of the repository.
 Citation metadata are also provided in CITATION.cff.
-Author: Julián Moyano Di Carlo ORCID: https://orcid.org/0000-0003-1524-9514
+Author: Julián Moyano Di Carlo (ORCID: https://orcid.org/0000-0003-1524-9514)
 
 ## License
 This repository is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0).
