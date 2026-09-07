@@ -20,6 +20,7 @@ Masters-of-Water-and-Stone/
 ├── output/
 └── scripts/
 └── images/
+```
 
 ## Contents
 	•	Codebook.pdf: Description of the variables and data included in the repository.
