@@ -10,7 +10,7 @@ author:
       - name: Department of Historical Studies (GU)
         url: https://www.gu.se/en/historical-studies        
 date: "`r format(Sys.Date())`"
-license: "CC BY-NC-SA"
+license: "CC BY"
 funding: "Tracing carvers on the rocks (DIGARV 2020-03817)"
 format: 
     html:
@@ -66,8 +66,8 @@ In order to execute bayesian aoristics you need a working [C++ compiler](https:/
 
 ```{r}
 #| label: packages
-#| message: false
-#| warning: false
+#| message: true
+#| warning: true
 
 # Clean environment
 rm(list=ls())
@@ -94,8 +94,9 @@ The data used in this script comes from a shape file and a csv file stored in /d
 #| warning: false
 
 # Import datasets
-AspebergetFigures <- st_read(here("data/shp/AspebergetFigures.shp")) %>%
-    st_drop_geometry()
+AspebergetFigures <- st_read(here("data/shp/RockArtShp.gpkg"), layer = "AspebergetFigures") %>%
+    st_drop_geometry() %>%
+    rename("Update" = Update_) 
 
 Superimpositions <- read_csv(here("data/csv/SuperimpositionsAspe.csv"))
 

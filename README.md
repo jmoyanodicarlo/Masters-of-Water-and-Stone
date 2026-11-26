@@ -16,8 +16,7 @@ Masters-of-Water-and-Stone/
 ├── data/
 │ ├── csv/
 │ ├── jpg/
-│ └── shp/
-├── graphics/
+│ └── gpkg/
 ├── notebooks/
 ├── output/
 └── scripts/
@@ -28,8 +27,7 @@ Masters-of-Water-and-Stone/
 	•	Codebook.pdf: Description of the variables and data included in the repository.
 	•	data/csv/: Data tables in CSV format used in the analyses.
 	•	data/jpg/: Images with outlines used in the morphometric analyses.
-	•	data/shp/: Figures from Aspeberget and panels from Bohuslän in ESRI Shapefile format.
-	•	graphics/: Graphics associated with the analyses.
+	•	data/gpkg/: Figures from Aspeberget, panels from Bohuslän, and ship sample from Bohuslän in GeoPackage format.
 	•	notebooks/: Rendered HTML versions of the analytical notebooks.
 	•	output/: R objects and intermediate analytical outputs required by the analyses.
 	•	scripts/: Quarto (.qmd) source files containing the analyses.
@@ -45,5 +43,8 @@ Citation metadata are also provided in CITATION.cff.
 Author: Julián Moyano Di Carlo (ORCID: https://orcid.org/0000-0003-1524-9514)
 
 ## License
-This repository is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0).
-See the repository license information for details.
+This repository is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
+
+A copy of the license is provided in the LICENSE file.
+
+https://creativecommons.org/licenses/by/4.0/

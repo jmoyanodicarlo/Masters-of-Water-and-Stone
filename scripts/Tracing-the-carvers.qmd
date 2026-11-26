@@ -10,7 +10,7 @@ author:
       - name: Department of Historical Studies (GU)
         url: https://www.gu.se/en/historical-studies        
 date: "`r format(Sys.Date())`"
-license: "CC BY-NC-SA"
+license: "CC BY"
 funding: "Tracing carvers on the rocks (DIGARV 2020-03817)"
 format: 
     html:
@@ -56,8 +56,8 @@ The function `groundhog.library` must be executed twice: one time to install pac
 
 ```{r}
 #| label: packages
-#| message: false
-#| warning: false
+#| message: true
+#| warning: true
 
 # Clean environment
 rm(list=ls())
@@ -67,7 +67,7 @@ pkgs <- c("dispRity", "dplyr", "forcats", "ggplot2", "ggpubr", "ggrepel", "glue"
 
 # Load packages on date of use (and install if necessary)
 require("groundhog")
-groundhog.library(pkgs, "2025-10-1")
+groundhog.library(pkgs, "2026-11-1")
 
 # Setting directory
 here::i_am("scripts/Tracing-the-carvers.qmd")
@@ -83,10 +83,10 @@ The data used in this script comes from two shapefiles. `AspebergetFigures.shp` 
 #| warning: false
 
 # Import shape file with figures information
-AspebergetFigures <- st_drop_geometry(st_read(here("data/shp/AspebergetFigures.shp")))
+AspebergetFigures <- st_drop_geometry(st_read(here("data/shp/RockArtShp.gpkg"), layer = "AspebergetFigures"))
 
 # Import metadata for Bohuslan ships
-BohuslanShips <- st_drop_geometry(st_read(here("data/shp/BohuslanShips.shp")))
+BohuslanShips <- st_drop_geometry(st_read(here("data/shp/RockArtShp.gpkg"), layer = "BohuslanShips"))
 ```
 
 ## Partial figures analysis

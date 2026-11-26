@@ -10,7 +10,7 @@ author:
       - name: Department of Historical Studies (GU)
         url: https://www.gu.se/en/historical-studies        
 date: "`r format(Sys.Date())`"
-license: "CC BY-NC-SA"
+license: "CC BY"
 funding: "Tracing carvers on the rocks (DIGARV 2020-03817)"
 format: 
     html:
@@ -60,18 +60,18 @@ The package `groundhog` must be installed before executing the notebook. The fun
 
 ```{r}
 #| label: packages
-#| message: false
-#| warning: false
+#| message: true
+#| warning: true
 
 # Clean environment
 rm(list=ls())
 
-# Required packages¨
+# Required packages
 pkgs <- c("dplyr", "forcats", "ggdist", "ggplot2", "ggpubr", "ggrepel", "ggtext", "grid", "gridExtra", "here", "knitr", "magrittr", "readr", "reshape2", "scales", "sf", "tibble", "tidyr", "rmarkdown")
 
 # Load packages on date of use (and install if necessary)
-require("groundhog")
-groundhog.library(pkgs, "2025-10-1")
+require(groundhog)
+groundhog.library(pkgs, "2026-11-1")
 
 # Setting directory
 here::i_am("scripts/First-the-rock-then-the-art.qmd")
@@ -87,7 +87,7 @@ The data used in this script come from two shapefiles and three CSV files. `Bohu
 #| warning: false
 
 # Load Aspeberget's figures 
-aspe_figures <- st_read(here("data/shp/AspebergetFigures.shp"))
+aspe_figures <- st_read(here("data/shp/RockArtShp.gpkg"), layer = "AspebergetFigures")
 
 # Tidy format for aspe_figures
 aspe_long <- aspe_figures %>% 
@@ -390,8 +390,6 @@ Next, I plot the orientation and directionality of the figures in relation with 
 
 # Orientation by panel
 aspe_figures %>% 
-    # Removing panels without orientation information
-    filter(Orient > 0) %>% 
     # Removing panels with less than three observations
     group_by(RAAnr) %>% 
     filter(n() > 3) %>%
@@ -422,8 +420,6 @@ aspe_figures %>%
 
 # Directionality by panel
 aspe_figures %>% 
-    # Removing panels without directionality information
-    filter(Direction > 0) %>% 
     # Removing panels with less than three observations
     group_by(RAAnr) %>% 
     filter(n() > 3) %>%
